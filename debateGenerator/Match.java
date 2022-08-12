@@ -1,18 +1,17 @@
 package debateGenerator;
-public class Match
-{
+public class Match {
     private String aff;
     private String neg;
     private String judge;
     protected String affSkwl;
     protected String negSkwl;
+	
     /**
      * Creates a new Match instance
      * @param aff team
      * @param neg team
      */
-    public Match (String aff,String neg)
-    {
+    public Match (String aff,String neg) {
         this.aff=aff;
         this.neg=neg;
         if(this.aff.contains("-"))
@@ -32,37 +31,54 @@ public class Match
             this.negSkwl=this.neg;
         }
     }
+	
     /**
      * Creates a new Match instance with a judge
      * @param affirmative team
      * @param negative team
      * @param judge
      */
-    public Match (String aff,String neg, String judge)
-    {
+    public Match (String aff,String neg, String judge) {
         this(aff,neg);
         this.judge=judge;
     }
-    public String getNegSkwl()
-    {
+	
+    /**
+     * @return negative school
+     */
+    public String getNegSkwl() {
         return this.negSkwl;
     }
-    public String getAffSkwl()
-    {
+	
+    /**
+     * @return affirmative school
+     */
+    public String getAffSkwl() {
         return this.affSkwl;
     }
-    public String getAff()
-    {
+	
+    /**
+     * @return affirmative
+     */
+    public String getAff() {
         return this.aff;
     }
-    public String getNeg()
-    {
+	
+    /**
+     * @return negative 
+     */
+    public String getNeg() {
         return this.neg;
     }
-    public String getJudge()
-    {
+	
+    /**
+     * @return judge
+     */
+    public String getJudge() {
         return this.judge;
     }
+	
+    @override
     public String toString()
     {
         String result=this.aff+"\t"+this.neg;
@@ -73,6 +89,8 @@ public class Match
         }
         return result;
     }
+	
+    @override
     public boolean equals(Object obj)
     {
         //see if it's the same object
@@ -105,6 +123,8 @@ public class Match
             return false;
         }
     }
+	
+    @override
     public int hashCode()
     {
 		/*there's no way that I can think of to write this method, because of how equality here works- matches are equal if either they have the same aff and neg teams,

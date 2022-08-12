@@ -79,8 +79,7 @@ public class Match {
     }
 	
     @override
-    public String toString()
-    {
+    public String toString() {
         String result=this.aff+"\t"+this.neg;
         if(this.judge!=null)
         {
@@ -91,8 +90,7 @@ public class Match {
     }
 	
     @override
-    public boolean equals(Object obj)
-    {
+    public boolean equals(Object obj) {
         //see if it's the same object
         if(this == obj) {
             return true;
@@ -106,27 +104,22 @@ public class Match {
             return false;
         }
         Match other=(Match)obj;
-        if(this.aff.equals(other.aff)&&this.negSkwl.equals(other.negSkwl))
-        {
+        if(this.aff.equals(other.aff)&&this.negSkwl.equals(other.negSkwl)) {
             return true;
         }
-        else if(this.neg.equals(other.neg)&&this.affSkwl.equals(other.affSkwl))
-        {
+        else if(this.neg.equals(other.neg)&&this.affSkwl.equals(other.affSkwl)) {
             return true;
         }
-        else if(this.judge!=null&&other.judge!=null&&this.judge.equals(other.judge)&&(this.aff.equals(other.aff)||this.neg.equals(other.neg)))
-        {
+        else if(this.judge!=null&&other.judge!=null&&this.judge.equals(other.judge)&&(this.aff.equals(other.aff)||this.neg.equals(other.neg))) {
             return true;
         }
-        else
-        {
+        else {
             return false;
         }
     }
 	
     @override
-    public int hashCode()
-    {
+    public int hashCode() {
 		/*there's no way that I can think of to write this method, because of how equality here works- matches are equal if either they have the same aff and neg teams,
 		or if the same judge is judging the same aff or neg team in both matches, so I can't find a way to account for both of those options of equality in this method.
 		as such, I did the following, and the contains method will just take a little longer, but it will still be better overall than using arrays and skipping the hashcode altogether*/

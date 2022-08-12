@@ -31,18 +31,17 @@ public class Round {
         matches.add(m);
     }
 
-    @override
+    @Override
     public String toString() {
         String result="";
-        for(Match m:matches)
-        {
+        for(Match m:matches) {
             result+=m.toString();
             result+="\n";
         }
         return result;
     }
 
-    @override
+    @Override
     public boolean equals(Object obj) {
         //see if it's the same object
         if(this == obj) {
@@ -66,7 +65,7 @@ public class Round {
         return false;
     }
 	
-    @override
+    @Override
     public int hashCode() {
 		/*see comments in the match class about the difficulty of writing a functioning hashcode method due to the different possibilities for equality
 		here, I limited the options slightly by using the hashcode method for the size of matches*/

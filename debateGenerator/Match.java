@@ -14,28 +14,24 @@ public class Match {
     public Match (String aff,String neg) {
         this.aff=aff;
         this.neg=neg;
-        if(this.aff.contains("-"))
-        {
+        if(this.aff.contains("-")) {
             this.affSkwl=this.aff.substring(0,this.aff.indexOf("-"));
         }
-        else
-        {
+        else {
             this.affSkwl=this.aff;
         }
-        if(this.neg.contains("-"))
-        {
+        if(this.neg.contains("-")) {
             this.negSkwl=this.neg.substring(0,this.neg.indexOf("-"));
         }
-        else
-        {
+        else {
             this.negSkwl=this.neg;
         }
     }
 	
     /**
      * Creates a new Match instance with a judge
-     * @param affirmative team
-     * @param negative team
+     * @param aff team
+     * @param neg team
      * @param judge
      */
     public Match (String aff,String neg, String judge) {
@@ -78,18 +74,17 @@ public class Match {
         return this.judge;
     }
 	
-    @override
+    @Override
     public String toString() {
         String result=this.aff+"\t"+this.neg;
-        if(this.judge!=null)
-        {
+        if(this.judge!=null) {
             result+="\t";
             result+=this.judge;
         }
         return result;
     }
 	
-    @override
+    @Override
     public boolean equals(Object obj) {
         //see if it's the same object
         if(this == obj) {
@@ -118,7 +113,7 @@ public class Match {
         }
     }
 	
-    @override
+    @Override
     public int hashCode() {
 		/*there's no way that I can think of to write this method, because of how equality here works- matches are equal if either they have the same aff and neg teams,
 		or if the same judge is judging the same aff or neg team in both matches, so I can't find a way to account for both of those options of equality in this method.

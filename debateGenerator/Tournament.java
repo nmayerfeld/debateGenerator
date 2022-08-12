@@ -1,8 +1,7 @@
 package debateGenerator;
 import java.util.*;
 import java.util.Scanner;
-public class Tournament
-{
+public class Tournament {
     private List<Round> rounds;
     private List<String> affTeams;
     private List<String> negTeams;
@@ -175,7 +174,10 @@ public class Tournament
             return false;
         }
     }
-	
+
+    /**
+     * takes user input to set the number of rounds desired
+     */
     public void setNumRounds() {
         boolean myChecker=true;
         while(myChecker) {
@@ -190,15 +192,21 @@ public class Tournament
             }
         }
     }
-	
+
+    /**
+     * @throws TooFewTeamsException
+     * @throws WrongNumberOfJudgesException
+     */
     public void createListsOfTeams() throws TooFewTeamsException, WrongNumberOfJudgesException {
         readAffTeams();
         //make sure they enter the same number of teams and judges
         readNegTeams(); //will thrown an illegal argument exception if wrong number
         readJudges();  //will throw an illegal state exception if wrong number
     }
-	
-    //uses scanner to get Affirmative teams from the user
+
+    /**
+     * uses scanner to get Affirmative teams from the user
+     */
     public void readAffTeams() {
         Scanner myScanner=new Scanner(System.in);
         System.out.println("\n\n\nPlease enter all of the affirmative teams in this tournament");
@@ -216,8 +224,11 @@ public class Tournament
             }
         }
     }
-	
-    //uses scanner to get the negative teams from the user
+
+    /**
+     * uses scanner to get the negative teams from the user
+     * @throws TooFewTeamsException
+     */
     public void readNegTeams() throws TooFewTeamsException {
         Scanner myScanner=new Scanner(System.in);
         System.out.println("\n\n\n Are the negative team names the same as the affirmative team names? If so, please type SAME.  If not, please type DIFFERENT");
@@ -243,8 +254,11 @@ public class Tournament
             throw new TooFewTeamsException();
         }
     }
-	
-    //uses scanner to get the list of judges from the user
+
+    /**
+     * uses scanner to get the list of judges from the user
+     * @throws WrongNumberOfJudgesException
+     */
     public void readJudges() throws WrongNumberOfJudgesException {
         Scanner myScanner=new Scanner(System.in);
         System.out.println("\n\n\nPlease enter all of the judges in this tournament");
@@ -268,7 +282,7 @@ public class Tournament
         }
     }
 	
-    @override
+    @Override
     public String toString() {
         String result="";
         for (Round r: rounds) {

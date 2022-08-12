@@ -1,26 +1,38 @@
 package debateGenerator;
 import java.util.*;
-public class Round
-{
+public class Round {
     protected List<Match> matches;
-    public Round()
-    {
+	
+    public Round() {
         this.matches= new ArrayList<>();
     }
-    public void setMatch(String aff, String neg, String judge)
-    {
+   
+    /**
+     * @param aff
+     * @param neg
+     * @param judge
+     */
+    public void setMatch(String aff, String neg, String judge) {
         matches.add(new Match(aff,neg,judge));
     }
-    public void setMatch(String aff, String neg)
-    {
+	
+   /**
+     * @param aff
+     * @param neg
+     */
+    public void setMatch(String aff, String neg) {
         matches.add(new Match (aff,neg));
     }
-    public void addMatch(Match m)
-    {
+	
+   /**
+     * @param m
+     */
+    public void addMatch(Match m) {
         matches.add(m);
     }
-    public String toString()
-    {
+
+    @override
+    public String toString() {
         String result="";
         for(Match m:matches)
         {
@@ -29,8 +41,9 @@ public class Round
         }
         return result;
     }
-    public boolean equals(Object obj)
-    {
+
+    @override
+    public boolean equals(Object obj) {
         //see if it's the same object
         if(this == obj) {
             return true;
@@ -45,17 +58,16 @@ public class Round
         }
         Round other=(Round)obj;
         //check if they contain any of the same match
-        for (int i=0;i<other.matches.size();i++)
-        {
-            if(this.matches.contains(other.matches.get(i)))
-            {
+        for (int i=0;i<other.matches.size();i++) {
+            if(this.matches.contains(other.matches.get(i))) {
                 return true;
             }
         }
         return false;
     }
-    public int hashCode()
-    {
+	
+    @override
+    public int hashCode() {
 		/*see comments in the match class about the difficulty of writing a functioning hashcode method due to the different possibilities for equality
 		here, I limited the options slightly by using the hashcode method for the size of matches*/
         Integer round=(Integer)(this.matches.size());

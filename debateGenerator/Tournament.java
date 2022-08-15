@@ -1,49 +1,97 @@
 package debateGenerator;
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.*;
+import java.util.List;
 import java.util.Scanner;
 public class Tournament {
     private List<Round> rounds;
     private List<String> affTeams;
     private List<String> negTeams;
     private List<String> judges;
+    private int numMatchups;
+    private String filename;
     private int numRounds;
-	
-    public static void main (String[] args) {
-		/*steps
-		1) SET NUMBER OF ROUNDS
-		2)SET NUM OF MATCHES IN EACH ROUND
-		3) RUN THROUGH USER INPUT
-		4) CREATE A MATCH BY RANDOMLY PICKING AN AFF AND A NEG AND JUDGE, CHECK IF THEY ARE THE SAME AS ANOTHER MATCH IN THAT ROUND, IF NOT, ADD TO THE ROUND
-				REMOVE THEM FROM THE ORIGINAL LISTS
-		5) LOOP THAT AS MANY TIMES AS ROUNDS NEEDED (EACH ADDITIONAL ROUND CHECKING THAT IT ISN'T THE SAME AS PREVIOUS ONES)
-		6) PRINT
-		*/
-        // create tournament
-        Tournament tournament= new Tournament(0);
-        //set numRounds
-        tournament.setNumRounds();
-        //fill lists with teams and judges
-        //check if any of the exceptions are thrown due to wrong number of negative teams/judges inputted and print out corrrect messages
-        try{
-            tournament.createListsOfTeams();
-        }catch(TooFewTeamsException e){
-            System.out.println("THE NUMBER OF AFFIRMATIVE TEAMS MUST BE EQUAL TO THE NUMBER OF NEGATIVE TEAMS. YOU ENTERED: "+tournament.affTeams.size()+" AFFIRMATIVE TEAMS AND "+tournament.negTeams.size()+" NEGATIVE TEAMS.  PLEASE RETRY");
-            return;
-        }catch(WrongNumberOfJudgesException s){
-            System.out.println("THE NUMBER OF JUDGES MUST BE EQUAL TO THE NUMBER OF MATCHES. YOU ENTERED: "+tournament.affTeams.size()+" MATCHES AND "+tournament.judges.size()+" JUDGES.  PLEASE RETRY");
-            return;
-        }
-        //generate rounds
-        tournament.setTournament(tournament.generateRounds(tournament.numRounds));
-        tournament.printPretty();
-    }
-	
-    public Tournament(int numRounds) {
+
+    public Tournament() {
         this.rounds= new ArrayList<>();
-        this.numRounds=numRounds;
+        this.numRounds=0;
+        this.numMatchups=0;
         this.affTeams=new ArrayList<>();
         this.negTeams=new ArrayList<>();
         this.judges=new ArrayList<>();
+    }
+
+    /**
+     * @param numRounds
+     */
+    public void setNumRounds(int numRounds){
+        this.numRounds=numRounds;
+    }
+
+    /**
+     * @return numRounds
+     */
+    public int getNumRounds(){
+        return this.numRounds;
+    }
+
+    /**
+     * @param numMatchups
+     */
+    public void setNumMatchups(int numMatchups){
+        this.numMatchups=numMatchups;
+    }
+
+    /**
+     * @return numTeams
+     */
+    public int getNumMatchups(){
+        return this.numMatchups;
+    }
+
+    /**
+     * @param teams
+     */
+    public void setAffTeams(ArrayList<String> teams){
+        this.affTeams=teams;
+    }
+
+    /**
+     * @return affTeams
+     */
+    public ArrayList<String> getAffTeams(){
+        return (ArrayList<String>) this.affTeams;
+    }
+
+    /**
+     * @param teams
+     */
+    public void setNegTeams(ArrayList<String> teams){
+        this.negTeams=teams;
+    }
+
+    /**
+     * @return negTeams
+     */
+    public ArrayList<String> getNegTeams(){
+        return (ArrayList<String>) this.negTeams;
+    }
+
+    /**
+     * @param judges
+     */
+    public void setJudges(ArrayList<String> judges){
+        this.judges=judges;
+    }
+
+    /**
+     * @return judges
+     */
+    public ArrayList<String> getJudges(){
+        return (ArrayList<String>) this.judges;
     }
 
     /**
@@ -52,7 +100,20 @@ public class Tournament {
     public void setTournament(ArrayList<Round> myRounds) {
         this.rounds=myRounds;
     }
-	
+
+    /**
+     * @param filename
+     */
+    public void setFilename(String filename){
+        this.filename=filename;
+    }
+
+    /**
+     * @return filename
+     */
+    public String getFilename(){
+        return this.filename;
+    }
     /**
      * @param numRounds
      * @return ArrayList of rounds generated
@@ -124,11 +185,13 @@ public class Tournament {
             Match myMatch=new Match(myAff,myNeg,myJudge);
             //check if the judge and team are from the same skwl
             String myJudgeSkwl="";
-            if(myJudge.contains("-")) {
-                myJudgeSkwl=myJudge.substring(0,myJudge.length()-2);
-            }
-            else {
-                myJudgeSkwl=myJudge;
+            if(myJudge!=null){
+                if(myJudge.contains("-")) {
+                    myJudgeSkwl=myJudge.substring(0,myJudge.length()-2);
+                }
+                else {
+                    myJudgeSkwl=myJudge;
+                }
             }
             if(myMatch.getJudge()!=null&&(myJudgeSkwl.equals(myMatch.getAffSkwl())||myJudgeSkwl.equals(myMatch.getNegSkwl()))) {
                 continue;
@@ -174,113 +237,6 @@ public class Tournament {
             return false;
         }
     }
-
-    /**
-     * takes user input to set the number of rounds desired
-     */
-    public void setNumRounds() {
-        boolean myChecker=true;
-        while(myChecker) {
-            System.out.print("Enter the number of rounds to create: ");
-            Scanner myScanner= new Scanner(System.in);
-            if(myScanner.hasNextInt()) {
-                this.numRounds=myScanner.nextInt();
-                myChecker=false;
-            }
-            else {
-                System.out.println("You entered the wrong type of input.  Please enter a number: ");
-            }
-        }
-    }
-
-    /**
-     * @throws TooFewTeamsException
-     * @throws WrongNumberOfJudgesException
-     */
-    public void createListsOfTeams() throws TooFewTeamsException, WrongNumberOfJudgesException {
-        readAffTeams();
-        //make sure they enter the same number of teams and judges
-        readNegTeams(); //will thrown an illegal argument exception if wrong number
-        readJudges();  //will throw an illegal state exception if wrong number
-    }
-
-    /**
-     * uses scanner to get Affirmative teams from the user
-     */
-    public void readAffTeams() {
-        Scanner myScanner=new Scanner(System.in);
-        System.out.println("\n\n\nPlease enter all of the affirmative teams in this tournament");
-        System.out.println("If there are muliple affirmative teams from the same school, please enter them as SCHOOLNAME-LETTER");
-        System.out.println("For example, MTA-A, MTA-B.....");
-        Boolean run=true;
-        while(run) {
-            System.out.println("Please enter the next affirmative team name.  If there are no more, please enter the word DONE and press enter: ");
-            String aff=myScanner.nextLine().toUpperCase();
-            if (aff.equals("DONE")) {
-                run=false;
-            }
-            else {
-                this.affTeams.add(aff);
-            }
-        }
-    }
-
-    /**
-     * uses scanner to get the negative teams from the user
-     * @throws TooFewTeamsException
-     */
-    public void readNegTeams() throws TooFewTeamsException {
-        Scanner myScanner=new Scanner(System.in);
-        System.out.println("\n\n\n Are the negative team names the same as the affirmative team names? If so, please type SAME.  If not, please type DIFFERENT");
-        String answer=myScanner.nextLine().toUpperCase();
-        if(answer.equals("SAME")) {
-            this.negTeams.addAll(this.affTeams);
-        }
-        else if(answer.equals("DIFFERENT")) {
-            Boolean run=true;
-            while(run) {
-                System.out.println("Please enter the next negative team name.  If there are no more, please enter the word DONE as shown");
-                String aff=myScanner.nextLine().toUpperCase();
-                if (aff.equals("DONE")) {
-                    run=false;
-                }
-                else {
-                    this.negTeams.add(aff);
-                }
-            }
-        }
-        //check to make sure there are the same number of AFF teams as NEG
-        if(this.affTeams.size()!=this.negTeams.size()) {
-            throw new TooFewTeamsException();
-        }
-    }
-
-    /**
-     * uses scanner to get the list of judges from the user
-     * @throws WrongNumberOfJudgesException
-     */
-    public void readJudges() throws WrongNumberOfJudgesException {
-        Scanner myScanner=new Scanner(System.in);
-        System.out.println("\n\n\nPlease enter all of the judges in this tournament");
-        System.out.println("If there are muliple judges with the same last name, please include a first initial");
-        System.out.println("If there are muliple judges from the same skwl, please enter the school name followed by a dash and a number, ex: mta-1, mta-2,...");
-        System.out.println("If you don't want to set the judges, enter the word NONE and press enter: ");
-        Boolean run=true;
-        while(run) {
-            System.out.println("Please enter the next judge and press enter: ");
-            System.out.println("If there are no more, please enter enter the word DONE and press enter");
-            String judge=myScanner.nextLine().toUpperCase();
-            if (judge.equals("NONE")||judge.equals("DONE")) {
-                run=false;
-            }
-            else {
-                this.judges.add(judge);
-            }
-        }
-        if(this.judges.size()!=this.negTeams.size()&&this.judges.size()!=0) {
-            throw new WrongNumberOfJudgesException();
-        }
-    }
 	
     @Override
     public String toString() {
@@ -292,25 +248,33 @@ public class Tournament {
         return result;
     }
 
+    /**
+     * print the formatted string version of the tournament
+     */
     public void printPretty() {
-        System.out.println("\n\n");
-        System.out.printf ("%-15s", "AFF's:");
-        System.out.printf ("%-15s", "NEG's:");
-        System.out.printf ("%-15s %n", "JUDGES:");
-        System.out.println("\n");
+        System.out.println(this.createPrettyString());
+    }
+
+    /**
+     * @return a formatted string of the tournament matchups
+     */
+	public String createPrettyString(){
+        String s= String.format("%-15s","AFF's:");
+        s+= String.format("%-15s","NEG's:");
+        s+=String.format ("%-15s %n","JUDGES:");
         int roundNumber=1;
         for(Round r:this.rounds) {
-            System.out.println("Round Number: "+roundNumber);
+            s+="Round Number: "+String.valueOf(roundNumber)+"\n";
             for(Match m: r.matches) {
-                System.out.printf ("%-15s", m.getAff());
-                System.out.printf ("%-15s", m.getNeg());
-                System.out.printf ("%-15s %n", m.getJudge());
+                s+=String.format("%-15s",m.getAff());
+                s+=String.format("%-15s",m.getNeg());
+                s+=String.format("%-15s %n",m.getJudge());
             }
-            System.out.println("\n\n\n");
+            s+="\n";
             roundNumber++;
         }
+        return s;
     }
-	
     public void printTournament() {
         System.out.println(this.toString());
     }

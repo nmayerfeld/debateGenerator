@@ -1,5 +1,9 @@
 package debateGenerator;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -36,6 +40,14 @@ public class CliVersion {
         }
         //generate rounds
         tournament.setTournament(tournament.generateRounds(tournament.getNumRounds()));
+        String filename=c.getFileName();
+        tournament.setFilename(filename);
+        File f=new File(tournament.getFilename());
+        try {
+            Files.writeString(Path.of(tournament.getFilename()),tournament.createPrettyString());
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
         tournament.printPretty();
     }
 
@@ -157,5 +169,12 @@ public class CliVersion {
         if(judges.size()!=t.getAffTeams().size()&&judges.size()!=0) {
             throw new WrongNumberOfJudgesException();
         }
+    }
+
+    public String getFileName() {
+        Scanner myScanner=new Scanner(System.in);
+        System.out.println("\n\n\nPlease enter the name you would like to be used for your results file");
+        System.out.println("It will be saved in as <replaced with your input>.txt to your current directory.  Valid filenames only please.");
+        return myScanner.nextLine();
     }
 }

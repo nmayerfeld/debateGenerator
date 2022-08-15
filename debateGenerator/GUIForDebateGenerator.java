@@ -262,7 +262,7 @@ public class GUIForDebateGenerator {
             myFrame = new JFrame("Welcome to the debate generator.");
             myFrame.setSize(800,400);
             myFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-            myLabel= new JLabel("Please input the filename.  It will be saved as <replace with your input>.txt in the current directory", JLabel.CENTER);
+            myLabel= new JLabel("Please input the filename.  It will be saved as <replaced with your input>.txt in the current directory", JLabel.CENTER);
             myLabel.setBounds(0,40,800,25);
             myFrame.add(myLabel);
             JLabel l= new JLabel("valid filenames only please", JLabel.CENTER);

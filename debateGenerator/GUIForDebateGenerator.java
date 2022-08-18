@@ -1,6 +1,7 @@
 package debateGenerator;
 
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -130,27 +131,54 @@ public class GUIForDebateGenerator {
             list=new ArrayList<>();
             listOfTextFields=new ArrayList<>();
             myFrame = new JFrame("Welcome to the debate generator.");
-            int height = (65*numOfField)+260;
+            int height=900;
+            if(((65*numOfField)+260)<height) {
+                height=(65*numOfField)+260;
+            }
+            int width=650;
+            if(numOfField>22) { //need more columns
+                width+=((numOfField-1)/22)*200;
+            }
             myFrame.setSize(650,height);
             myFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             myLabel= new JLabel(str, JLabel.CENTER);
-            myLabel.setBounds(0,40,650,25);
+            myLabel.setBounds(0,20,650,25);
             myFrame.add(myLabel);
             instructions=new JLabel(directions,JLabel.CENTER);
-            instructions.setBounds(0,100,650,25);
+            instructions.setBounds(0,70,650,25);
             myFrame.add(instructions);
-            int currentBoundHeight=160;
+            int currentBoundHeight=130;
+            int currentX=250;
+            int buttonHeight=0;
             for (int i=0;i<numOfField;i++) {
-                JTextField jTF=new JTextField(JTextField.CENTER);
-                jTF.setBounds(250,currentBoundHeight,150,25);
-                currentBoundHeight+=65;
+                JTextField jTF;
+                if(i!=1&&((i-1)%22==0)) {
+                    buttonHeight=currentBoundHeight;
+                    currentBoundHeight=130;
+                    currentX+=200;
+                }
+                if(numOfField>22) {
+                    jTF=new JTextField();
+                }
+                else {
+                    jTF=new JTextField(JTextField.CENTER);
+                }
+                jTF.setBounds(currentX,currentBoundHeight,150,20);
+                currentBoundHeight+=30;
                 myFrame.add(jTF);
                 this.listOfTextFields.add(jTF);
             }
             JPanel panel2=new JPanel();
             panel2.setLayout(null);
             this.enter=new JButton("Enter");
-            this.enter.setBounds(245,currentBoundHeight+40,160,25);
+            int panelHeight=0;
+            if(buttonHeight>currentBoundHeight) {
+                panelHeight=buttonHeight;
+            }
+            else{
+                panelHeight=currentBoundHeight;
+            }
+            this.enter.setBounds(245,panelHeight+10,160,25);
             enter.addActionListener(this);
             panel2.add(enter);
             myFrame.add(panel2);
@@ -293,25 +321,81 @@ public class GUIForDebateGenerator {
             } catch (IOException ex) {
                 ex.printStackTrace();
             }
-            GUIDisplayResult gDR=new GUIDisplayResult(result);
+            if(this.t.getTournament().size()==this.t.getNumRounds()) {
+                GUIDisplayResult gDR=new GUIDisplayResult(this.t.getTournament(),this.t.getNumMatchups());
+            }
+            else {
+                System.out.println("not mathematically possible to fulfill with given teams in a worthwhile amount of time");
+            }
         }
     }
 
     //class creating a gui that displays the resulting tournament schedule
-    class GUIDisplayResult{
+    class GUIDisplayResult {
         private JFrame myFrame;
-        private JTextArea j;
+
+        class JMatchup {
+            private JLabel aff;
+            private JLabel neg;
+            private JLabel judge;
+            private int height;
+            public JMatchup(String aff, String neg, String judge, int height, JPanel panel) {
+                this.aff=new JLabel(aff);
+                this.aff.setBounds(70,height,100,20);
+                panel.add(this.aff);
+                this.neg=new JLabel(neg);
+                this.neg.setBounds(210,height,100,20);
+                panel.add(this.neg);
+                this.judge=new JLabel(judge);
+                this.judge.setBounds(350,height,100,20);
+                panel.add(this.judge);
+            }
+        }
 
         /**
-         * @param s
+         * @param rounds
+         * @param numMatchups
          */
-        public GUIDisplayResult(String s) {
+        public GUIDisplayResult(ArrayList<Round> rounds, int numMatchups) {
             myFrame = new JFrame("Here are your results");
-            myFrame.setSize(600, 600);
+            JPanel panel=new JPanel();
+            panel.setLayout(null);
+            int height=35+(rounds.size()*50)+(numMatchups*rounds.size()*30);
+            String[] columnHeaders=new String[]{"AFF: ","NEG: ","JUDGE: "};
+            String[][] matches=new String[(numMatchups*rounds.size())+(rounds.size()*2)][3];
+            int currentRow=0;
+            int currentRound=1;
+            for(Round r :rounds) {
+                matches[currentRow][0]="Round "+String.valueOf(currentRound);
+                currentRow++;
+                for(Match m:r.getMatches()) {
+                    matches[currentRow][0]=m.getAff();
+                    matches[currentRow][1]=m.getNeg();
+                    matches[currentRow][2]=m.getJudge();
+                    currentRow++;
+                }
+                matches[currentRow][0]="";
+                matches[currentRow][1]="";
+                matches[currentRow][2]="";
+                currentRow++;
+                currentRound++;
+            }
+            JTable jTable=new JTable(matches,columnHeaders);
+            /*//instance table model
+            DefaultTableModel tableModel = new DefaultTableModel() {
+
+                @Override
+                public boolean isCellEditable(int row, int column) {
+                    //all cells false
+                    return false;
+                }
+            };
+            jTable.setModel(tableModel);*/
+            jTable.setBounds(20,30,480,height-60);
+            JScrollPane sp=new JScrollPane(jTable);
+            myFrame.add(sp);
+            myFrame.setSize(520, height);
             myFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-            j = new JTextArea(s);
-            j.setBounds(5, 5, 595, 595);
-            myFrame.add(j);
             myFrame.setVisible(true);
         }
     }

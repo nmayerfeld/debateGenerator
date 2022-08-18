@@ -102,6 +102,12 @@ public class Tournament {
     }
 
     /**
+     * @return ArrayList of Rounds
+     */
+    public ArrayList<Round> getTournament() {
+        return (ArrayList<Round>) this.rounds;
+    }
+    /**
      * @param filename
      */
     public void setFilename(String filename){
@@ -122,13 +128,25 @@ public class Tournament {
         ArrayList<Round> roundsGenerated= new ArrayList<>();
         int i=0;
         int superCounter=0;
-        while(i<numRounds&&superCounter<30000) {
-            boolean worked=this.createSingleRound(roundsGenerated);
+        while(i<numRounds&&superCounter<50000) {
+            boolean worked=this.createSingleRoundNoSameSchool(roundsGenerated);
             if(worked) {
                 i++;
             }
             superCounter++;
         }
+        //if it was unable to create the necessary number of rounds without a team from one school playing 2 different teams from the same school,
+        i=0;
+        superCounter=0;
+        roundsGenerated=new ArrayList<>();
+        while(i<numRounds&&superCounter<25000) {
+            boolean worked=this.createSingleRoundYesSameSchool(roundsGenerated);
+            if(worked) {
+                i++;
+            }
+            superCounter++;
+        }
+        System.out.println("after generate rounds, num rounds: "+i+"   superCounter: "+superCounter);
         return roundsGenerated;
     }
 
@@ -136,9 +154,10 @@ public class Tournament {
      * @param rounds
      * @return whether successful
      */
-    public boolean createSingleRound(ArrayList<Round> rounds) {
+    public boolean createSingleRoundNoSameSchool(ArrayList<Round> rounds) {
         //create list with aff teams with dash to match up first so when programming more than 2 rounds the program won't get stuck
         //and be unable to place the dashed teams in later picks
+        System.out.println("round attempted");
         ArrayList<String> noDashAffTeams= new ArrayList<>();
         ArrayList<String> affTeamsWithDash=new ArrayList<>();
         for(String s:this.affTeams) {
@@ -173,7 +192,8 @@ public class Tournament {
             int newPickNeg=(int)(Math.random()*copyOfNegTeams.size());
             String myNeg=copyOfNegTeams.get(newPickNeg);
             //making sure doesn't run endlessly
-            if(counter>200) {
+            if(counter>500) {
+                System.out.println("counter too high,single round create has failed");
                 return false;
             }
             //check for judge
@@ -182,7 +202,7 @@ public class Tournament {
                 int newPickJudge=(int)(Math.random()*copyOfJudges.size());
                 myJudge=copyOfJudges.get(newPickJudge);
             }
-            Match myMatch=new Match(myAff,myNeg,myJudge);
+            MatchNoSameSchool myMatch=new MatchNoSameSchool(myAff,myNeg,myJudge);
             //check if the judge and team are from the same skwl
             String myJudgeSkwl="";
             if(myJudge!=null){
@@ -237,7 +257,115 @@ public class Tournament {
             return false;
         }
     }
-	
+
+    /**
+     * @param rounds
+     * @return whether successful
+     */
+    public boolean createSingleRoundYesSameSchool(ArrayList<Round> rounds) {
+        //create list with aff teams with dash to match up first so when programming more than 2 rounds the program won't get stuck
+        //and be unable to place the dashed teams in later picks
+        System.out.println("round attempted");
+        ArrayList<String> noDashAffTeams= new ArrayList<>();
+        ArrayList<String> affTeamsWithDash=new ArrayList<>();
+        for(String s:this.affTeams) {
+            if(s.contains("-")) {
+                affTeamsWithDash.add(s);
+            }
+            else {
+                noDashAffTeams.add(s);
+            }
+        }
+        ArrayList<String> copyOfNegTeams= new ArrayList<>();
+        copyOfNegTeams.addAll(this.negTeams);
+        ArrayList<String> copyOfJudges= new ArrayList<>();
+        copyOfJudges.addAll(this.judges);
+        Round r=new Round();
+        int counter=0;
+        //create the indvidual matches to add to the round
+        while(copyOfNegTeams.size()>0) {
+            counter++;
+            //pick random aff starting with dashed teams
+            String myAff=null;
+            int newPickAff=0;
+            if(affTeamsWithDash.size()>0) {
+                newPickAff=(int)(Math.random()*affTeamsWithDash.size());
+                myAff=affTeamsWithDash.get(newPickAff);
+            }
+            else {
+                newPickAff=(int)(Math.random()*noDashAffTeams.size());
+                myAff=noDashAffTeams.get(newPickAff);
+            }
+            // pick random neg
+            int newPickNeg=(int)(Math.random()*copyOfNegTeams.size());
+            String myNeg=copyOfNegTeams.get(newPickNeg);
+            //making sure doesn't run endlessly
+            if(counter>500) {
+                return false;
+            }
+            //check for judge
+            String myJudge=null;
+            if(copyOfJudges!=null&&copyOfJudges.size()>0) {
+                int newPickJudge=(int)(Math.random()*copyOfJudges.size());
+                myJudge=copyOfJudges.get(newPickJudge);
+            }
+            MatchYesSameSchool myMatch=new MatchYesSameSchool(myAff,myNeg,myJudge);
+            //check if the judge and team are from the same skwl
+            String myJudgeSkwl="";
+            if(myJudge!=null){
+                if(myJudge.contains("-")) {
+                    myJudgeSkwl=myJudge.substring(0,myJudge.length()-2);
+                }
+                else {
+                    myJudgeSkwl=myJudge;
+                }
+            }
+            if(myMatch.getJudge()!=null&&(myJudgeSkwl.equals(myMatch.getAffSkwl())||myJudgeSkwl.equals(myMatch.getNegSkwl()))) {
+                continue;
+            }
+            //check if they are from the same skwl
+            if(myMatch.getAffSkwl().equals(myMatch.getNegSkwl())) {
+                continue;
+            }
+            //check if match already exists in this round
+            if(r.matches.size()>0&&r.matches.contains(myMatch)) {
+                continue;
+            }
+            //check if it exists in other rounds
+            if(rounds.size()>0) {
+                boolean contains=false;
+                for (Round round :rounds) {
+                    for(Match m: round.getMatches()) {
+                        if (myMatch.equals(m)) {
+                            contains=true;
+                        }
+                    }
+                }
+                if (contains) {
+                    continue;
+                }
+            }
+            //if we've hit this point in the while loop, it doesn't already exist, so it should be added
+            r.addMatch(myMatch);
+            if(affTeamsWithDash.contains(myAff)) {
+                affTeamsWithDash.remove(myAff);
+            }
+            else {
+                noDashAffTeams.remove(myAff);
+            }
+            copyOfNegTeams.remove(myNeg);
+            if(myJudge!=null) {
+                copyOfJudges.remove(myJudge);
+            }
+        }
+        if(!rounds.contains(r)) {
+            rounds.add(r);
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
     @Override
     public String toString() {
         String result="";

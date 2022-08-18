@@ -7,24 +7,7 @@ public class Round {
     public Round() {
         this.matches= new ArrayList<>();
     }
-   
-    /**
-     * @param aff
-     * @param neg
-     * @param judge
-     */
-    public void setMatch(String aff, String neg, String judge) {
-        matches.add(new Match(aff,neg,judge));
-    }
-	
-   /**
-     * @param aff
-     * @param neg
-     */
-    public void setMatch(String aff, String neg) {
-        matches.add(new Match (aff,neg));
-    }
-	
+
    /**
      * @param m
      */
@@ -32,6 +15,9 @@ public class Round {
         matches.add(m);
     }
 
+    public List<Match> getMatches() {
+        return this.matches;
+    }
     @Override
     public String toString() {
         String result="";

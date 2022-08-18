@@ -1,4 +1,5 @@
 package debateGenerator;
+//doesn't allow same school matches
 public class MatchNoSameSchool implements Match {
     private String aff;
     private String neg;

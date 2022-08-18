@@ -136,7 +136,7 @@ public class GUIForDebateGenerator {
                 height=(65*numOfField)+260;
             }
             int width=650;
-            if(numOfField>22) { //need more columns
+            if(numOfField>22) { //need more columns if too many
                 width+=((numOfField-1)/22)*200;
             }
             myFrame.setSize(650,height);
